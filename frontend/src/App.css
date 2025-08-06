@@ -1,1 +1,13 @@
-
+body{
+  background-color: #212529;
+}
+h1 {
+  color: #fff;
+  text-align: center;
+  margin-top: 20px;
+}
+h1 p {
+  color: #ccc;
+  text-align: center;
+  margin-top: 10px;
+}
