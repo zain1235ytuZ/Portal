@@ -1,11 +1,17 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-
+import axios from "axios";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../Authprovider";
+import { useContext } from "react";
 function LoginForm() {
   const [formData, setFormData] = useState({
-    email: "",
+    username: "",
     password: "",
   });
+  const { isLoggedIn,setIsLoggedIn } = useContext(AuthContext);
+  
 
   const handleChange = (e) => {
     setFormData({
@@ -13,18 +19,31 @@ function LoginForm() {
       [e.target.name]: e.target.value,
     });
   };
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Simulate login
-    console.log("Login Data:", formData);
-
-    // Dummy check
-    if (formData.email && formData.password) {
-      alert("Login successful!");
-    } else {
-      alert("Please enter both email and password.");
+    try {
+      const response = await axios.post("http://localhost:8000/api/v1/token/", formData);
+      if (response.status === 200 || response.status === 201) {
+        localStorage.setItem("access_token", response.data.access);
+        localStorage.setItem("refresh_token", response.data.refresh);
+        toast.success("Login successful!");
+        setIsLoggedIn(true);
+        navigate("/");  // Redirect to home page after successful login
+      } else {
+        toast.error("Login failed. Please check your credentials.");
+        // Optionally redirect here
+      }
+    } catch (error) {
+      if (error.response) {
+        const errorMsg = typeof error.response.data === "string"
+          ? error.response.data
+          : JSON.stringify(error.response.data);
+        toast.error("Login failed: " + errorMsg);
+      } else {
+        toast.error("Login failed. Please try again.");
+      }
     }
   };
 
@@ -35,13 +54,13 @@ function LoginForm() {
           <h3 className="text-center mb-4">Welcome back!</h3>
           <form onSubmit={handleSubmit} className="border p-4 rounded shadow">
             <div className="mb-3">
-              <label htmlFor="email" className="form-label">Email address</label>
+              <label htmlFor="username" className="form-label">Username</label>
               <input
-                type="email"
+                type="text"
                 className="form-control"
-                id="email"
-                name="email"
-                value={formData.email}
+                id="username"
+                name="username"
+                value={formData.username}
                 onChange={handleChange}
                 required
               />
@@ -64,8 +83,8 @@ function LoginForm() {
               Login
             </button>
             <p className="mt-3 text-center">
-                        Dont have an account? <Link to="/register">Register</Link>
-                      </p>
+              Don't have an account? <Link to="/register">Register</Link>
+            </p>
           </form>
         </div>
       </div>

@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route } from "react-router";
 import LoginForm from './Component/login.jsx';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
+import Authprovider from './Authprovider.jsx';
 
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
 
   return (
   <>
+<Authprovider>
  
 
 <BrowserRouter>
@@ -27,6 +29,7 @@ function App() {
   <ToastContainer />
   <Footer />
 </BrowserRouter>
+</Authprovider>
 
    </>
   )

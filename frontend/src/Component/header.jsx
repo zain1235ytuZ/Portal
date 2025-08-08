@@ -1,6 +1,21 @@
 import React from 'react'
 import { Link } from 'react-router-dom';
+import { AuthContext } from '../Authprovider';
+import { useNavigate } from 'react-router-dom';
 const header = () => {
+
+  const { isLoggedIn, logout } = React.useContext(AuthContext);
+  const navigate = useNavigate();
+
+const handleLogout = () => {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    logout();
+    navigate('/login'); // Redirect to login page after logout
+  };
+
+
+
   return (
    <>
    <nav className="navbar navbar-expand-lg bg-body-tertiary">
@@ -36,10 +51,19 @@ const header = () => {
         </li>
       </ul>
       <div>
-        <button className='btn btn-outline-success me-2' type="button"><Link to="/login">login</Link>
+        {isLoggedIn ?  (
+          <button className='btn btn-outline-danger me-2' onClick={() => {handleLogout(); navigate('/login')}}>Logout</button>
+        ) : (
+          <>
+            <Link to="/login" className='btn btn-outline-primary me-2'>Login</Link>
+            <Link to="/register" className='btn btn-outline-success'>Register</Link>
           
-          </button>
-          <button className='btn btn-outline-success me-2' type="button"> <Link to="/register">Register</Link></button>
+</>
+
+        
+          )}
+          
+        
       </div>
     </div>
   </div>
