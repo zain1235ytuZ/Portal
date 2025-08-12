@@ -44,26 +44,48 @@ const StockPredictionDashboard = () => {
     { type: 'warning', message: 'TSLA showing bearish signals', time: '15 min ago', severity: 'warning' },
     { type: 'info', message: 'New AI model update available', time: '1 hour ago', severity: 'info' }
   ];
-const accessToken = localStorage.getItem("access_token");
-  // Simulate API calls without localStorage
-   useEffect(() => {
-   
+
+  // Fetch protected data on component mount
+  useEffect(() => {
     const fetchProtectedData = async () => {
+      const accessToken = localStorage.getItem("access_token");
+      
+      if (!accessToken) {
+        console.error("No access token found. Please log in.");
+        return;
+      }
+
       try {
         const response = await fetch('http://localhost:8000/api/v1/protected-view/', {
+          method: 'GET',
           headers: {
-            Authorization: `Bearer ${accessToken}`
-          }
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include'
         });
-        if (!response.ok) {
-          throw new Error("Failed to fetch protected data");
+
+        if (response.status === 401) {
+          console.error("Session expired. Please log in again.");
+          // Handle token expiration (e.g., redirect to login)
+          return;
         }
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
         const data = await response.json();
         console.log("Protected data fetched successfully:", data);
+        // You can set this data to state if needed
+        // setProtectedData(data);
       } catch (error) {
         console.error("Error fetching protected data:", error);
+        // Optionally show error to user
+        // toast.error("Failed to load protected data");
       }
     };
+
     fetchProtectedData();
   }, []);
 

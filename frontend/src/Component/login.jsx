@@ -24,26 +24,59 @@ function LoginForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:8000/api/v1/token/", formData);
-      if (response.status === 200 || response.status === 201) {
-        localStorage.setItem("access_token", response.data.access);
-        localStorage.setItem("refresh_token", response.data.refresh);
-        toast.success("Login successful!");
+      const response = await axios.post("http://localhost:8000/api/v1/token/", formData, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        withCredentials: true
+      });
+      
+      if (response.status === 200) {
+        const { access, refresh } = response.data;
+        
+        if (!access || !refresh) {
+          throw new Error("Invalid response from server: Missing tokens");
+        }
+        
+        // Store tokens in localStorage
+        localStorage.setItem("access_token", access);
+        localStorage.setItem("refresh_token", refresh);
+        
+        // Set default Authorization header for future requests
+        axios.defaults.headers.common['Authorization'] = `Bearer ${access}`;
+        
+        // Update auth state
         setIsLoggedIn(true);
-        navigate("/");  // Redirect to home page after successful login
+        toast.success("Login successful!");
+        
+        // Redirect to dashboard after successful login
+        navigate("/dashboard");
       } else {
-        toast.error("Login failed. Please check your credentials.");
-        // Optionally redirect here
+        throw new Error("Unexpected response from server");
       }
     } catch (error) {
+      console.error("Login error:", error);
+      
+      let errorMessage = "Login failed. Please try again.";
+      
       if (error.response) {
-        const errorMsg = typeof error.response.data === "string"
-          ? error.response.data
-          : JSON.stringify(error.response.data);
-        toast.error("Login failed: " + errorMsg);
-      } else {
-        toast.error("Login failed. Please try again.");
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        const { status, data } = error.response;
+        
+        if (status === 401) {
+          errorMessage = "Invalid username or password";
+        } else if (status === 400) {
+          errorMessage = data.detail || "Invalid request";
+        } else if (status >= 500) {
+          errorMessage = "Server error. Please try again later.";
+        }
+      } else if (error.request) {
+        // The request was made but no response was received
+        errorMessage = "No response from server. Please check your connection.";
       }
+      
+      toast.error(errorMessage);
     }
   };
 
