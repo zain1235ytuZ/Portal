@@ -49,7 +49,7 @@ function LoginForm() {
 
   return (
    <div  style={{
-          background: "linear-gradient(135deg, #a855f7, #6610f2)",
+          backgroundColor: "white",
         }}
    >
     <div className="container mt-5">

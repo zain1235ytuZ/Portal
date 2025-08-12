@@ -23,6 +23,8 @@ class protectedView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        content = {'message': 'This is a protected view.'}
+        content = {
+            'message': 'This is a protected view.',
+            'user': str(request.user)
+        }
         return Response(content)
- 
