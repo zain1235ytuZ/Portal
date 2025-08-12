@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom';
+import Button from './Button.jsx';
 import { AuthContext } from '../Authprovider';
 import { useNavigate } from 'react-router-dom';
 const header = () => {
@@ -52,7 +53,24 @@ const handleLogout = () => {
       </ul>
       <div>
         {isLoggedIn ?  (
+        
+          <>
+            <Link to="/Dashboard" className='btn btn-outline-primary me-2'>Dashboard</Link>
+           
           <button className='btn btn-outline-danger me-2' onClick={() => {handleLogout(); navigate('/login')}}>Logout</button>
+
+
+</>
+
+
+
+
+
+
+
+
+
+          
         ) : (
           <>
             <Link to="/login" className='btn btn-outline-primary me-2'>Login</Link>

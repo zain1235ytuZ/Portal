@@ -48,6 +48,10 @@ function LoginForm() {
   };
 
   return (
+   <div  style={{
+          background: "linear-gradient(135deg, #a855f7, #6610f2)",
+        }}
+   >
     <div className="container mt-5">
       <div className="row justify-content-center">
         <div className="col-md-6">
@@ -88,6 +92,7 @@ function LoginForm() {
           </form>
         </div>
       </div>
+    </div>
     </div>
   );
 }
